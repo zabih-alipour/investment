@@ -1,20 +1,29 @@
 import sqlite3
 
-from utils import dict_factory
+from .utils import dict_factory
 
-db_path = "./financial.db"
+db_path = "src/financial.db"
 
 
 def add_user(user):
     sql = ''' INSERT INTO user ("name") VALUES (?) '''
     with sqlite3.connect(db_path) as conn:
         cur = conn.cursor()
-        cur.execute(sql, (user.get('name'),))
+        cur.execute(sql, tuple(user.values()))
         conn.commit()
-        return cur.lastrowid
+        return get_user_by_id(cur.lastrowid)
 
 
-def get_user(user_id):
+def edit_user(user):
+    sql = ''' UPDATE user set name = ? where id = ? '''
+    with sqlite3.connect(db_path) as conn:
+        cur = conn.cursor()
+        cur.execute(sql, (user["name"], user["id"],))
+        conn.commit()
+        return get_user_by_id(cur.lastrowid)
+
+
+def get_user_by_id(user_id):
     sql = ''' select * from user where id = ? '''
     with sqlite3.connect(db_path) as conn:
         conn.row_factory = dict_factory
@@ -30,7 +39,16 @@ def get_users(name):
         sql = ''' select * from user '''
         if name:
             sql += ''' where name like ? '''
-            cur.execute(sql, (name,))
+            cur.execute(sql, (name + '%',))
         else:
             cur.execute(sql)
         return cur.fetchall()
+
+
+def delete_user(user_id):
+    sql = ''' delete from user where id = ? '''
+    with sqlite3.connect(db_path) as conn:
+        cur = conn.cursor()
+        cur.execute(sql, (user_id,))
+        conn.commit()
+        return cur.lastrowid
