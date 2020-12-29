@@ -1,13 +1,9 @@
-import sqlite3
-
-from .utils import dict_factory
-
-db_path = "src/financial.db"
+from .db_factory import get_db
 
 
 def add_user(user):
     sql = ''' INSERT INTO user ("name") VALUES (?) '''
-    with sqlite3.connect(db_path) as conn:
+    with get_db() as conn:
         cur = conn.cursor()
         cur.execute(sql, tuple(user.values()))
         conn.commit()
@@ -16,7 +12,7 @@ def add_user(user):
 
 def edit_user(user):
     sql = ''' UPDATE user set name = ? where id = ? '''
-    with sqlite3.connect(db_path) as conn:
+    with get_db() as conn:
         cur = conn.cursor()
         cur.execute(sql, (user["name"], user["id"],))
         conn.commit()
@@ -25,16 +21,14 @@ def edit_user(user):
 
 def get_user_by_id(user_id):
     sql = ''' select * from user where id = ? '''
-    with sqlite3.connect(db_path) as conn:
-        conn.row_factory = dict_factory
+    with get_db() as conn:
         cur = conn.cursor()
         cur.execute(sql, (user_id,))
         return cur.fetchone()
 
 
 def get_users(name):
-    with sqlite3.connect(db_path) as conn:
-        conn.row_factory = dict_factory
+    with get_db() as conn:
         cur = conn.cursor()
         sql = ''' select * from user '''
         if name:
@@ -47,7 +41,7 @@ def get_users(name):
 
 def delete_user(user_id):
     sql = ''' delete from user where id = ? '''
-    with sqlite3.connect(db_path) as conn:
+    with get_db() as conn:
         cur = conn.cursor()
         cur.execute(sql, (user_id,))
         conn.commit()
