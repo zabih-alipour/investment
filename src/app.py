@@ -2,11 +2,13 @@ from flask import Flask
 from users import user_controller as user
 from category import category_controller as category
 from payment_type import payment_type_controller as payment_type
+from payment import payment_controller as payment
 
 app = Flask(__name__)
 app.register_blueprint(user.user_blueprint)
 app.register_blueprint(category.category_blueprint)
 app.register_blueprint(payment_type.payment_type_blueprint)
+app.register_blueprint(payment.payment_blueprint)
 
 if __name__ == '__main__':
     app.run()
