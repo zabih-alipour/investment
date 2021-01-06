@@ -2,7 +2,7 @@ import sqlite3
 
 from flask import g
 
-DATABASE = "src/financial.db"
+DATABASE = "backend/src/financial.db"
 
 
 def get_db():
